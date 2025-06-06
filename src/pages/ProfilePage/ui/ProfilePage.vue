@@ -1,11 +1,13 @@
 <template>
-  <div class="w-full h-full">
-    <router-view />
+  <div>
+    Profile page
   </div>
 </template>
 
 <script setup lang="ts">
+
 </script>
 
 <style scoped>
+
 </style>
