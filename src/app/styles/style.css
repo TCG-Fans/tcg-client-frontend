@@ -21,6 +21,7 @@ html, body, #app {
 }
 
 body {
+  background-color: var(--color-cyb-blackish);
   display: block;
   margin: 0;
   min-width: 320px;
