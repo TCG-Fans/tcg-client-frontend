@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cyb-base: #d6c7b1;
+  --color-cyb-accent: #f7c24c;
+  --color-cyb-orange: #e85c33;
+  --color-cyb-red: #c92a2a;
+  --color-cyb-wine: #801d36;
+  --color-cyb-plum: #4d0e2c;
+  --color-cyb-blackish: #1a1a1a;
+}

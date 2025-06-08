@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
-import './style.css'
+import './app/styles/style.css'
 import App from './App.vue'
 import PrimeVue from 'primevue/config';
-import { APP_ROUTER } from "@/app/router/router.ts";
+import { APP_ROUTER } from "./app/router/router.ts";
 
 const app  = createApp(App)
 

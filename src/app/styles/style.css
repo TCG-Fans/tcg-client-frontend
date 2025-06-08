@@ -1,4 +1,8 @@
-@import "tailwindcss";
+@import "./custom-theme.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -11,8 +15,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  min-height: 100%;
+html, body, #app {
+  height: 100%;
+  margin: 0;
 }
 
 body {
@@ -36,10 +41,4 @@ a:hover {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
-
-@media (prefers-color-scheme: light) {
-  a:hover {
-    color: #747bff;
-  }
 }

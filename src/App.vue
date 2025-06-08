@@ -1,11 +1,8 @@
 <template>
-  <div class="w-full h-full">
+  <main class="bg-cyb-accent text-cyan-500 w-full h-full items-center justify-center flex">
     <router-view />
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
 </script>
-
-<style scoped>
-</style>
