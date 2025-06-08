@@ -1,12 +1,12 @@
 <template>
-  <header class="flex justify-between items-center m-2 p-1 gap-1 border-cyb-base rounded-sm border-solid border-2">
+  <header class="flex justify-between items-center gap-1 border-cyb-base rounded-md border-solid border-2">
     <router-link :to="{ name: RouterName.MainPage }">
       <div>Logo</div>
     </router-link>
     <div class="flex gap-1 items-center">
-      <Button>wallet</Button>
+      <WalletConnection />
       <router-link :to="{ name: RouterName.ProfilePage }">
-        <Avatar label="U" class="mr-2" size="large" shape="circle" />
+        <Avatar label="U" class="mr-2" size="normal" shape="circle" />
       </router-link>
     </div>
   </header>
@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { Avatar } from "primevue";
-import { Button } from "primevue"
 import {RouterName} from "@/shared/router/routerNames.ts";
+import WalletConnection from "@/features/wallet/connectUserWallet/ui/WalletConnection.vue";
 </script>
 
 <style scoped>
