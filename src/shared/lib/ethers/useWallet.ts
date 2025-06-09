@@ -2,11 +2,12 @@ import {computed, ref} from 'vue';
 import { ethers } from 'ethers';
 
 import Onboarding from '@metamask/onboarding';
+import { shorten } from "@/shared/utils/string.ts";
 
 const onboarding = new Onboarding();
 
 function startOnboarding() {
-    onboarding.startOnboarding(); // открывает установку MetaMask
+    onboarding.startOnboarding();
 }
 
 export function useWallet() {

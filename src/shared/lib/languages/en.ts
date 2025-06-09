@@ -3,5 +3,9 @@ export default {
         connectToWalletButtonTitle: '',
         connectToWalletModalTitle: 'Install Metamask',
         linkForMetamaskDownloading: 'Download Metamask Application'
+    },
+    switchProfileSection: {
+        deck: 'Deck',
+        collection: 'Collection'
     }
 }
