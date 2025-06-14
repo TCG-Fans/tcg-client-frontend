@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 
 import Onboarding from '@metamask/onboarding';
 import { shorten } from "@/shared/utils/string.ts";
+import {useNotify} from "@/shared/api/useNotify.ts";
 
 const onboarding = new Onboarding();
 
@@ -10,27 +11,41 @@ function startOnboarding() {
     onboarding.startOnboarding();
 }
 
+// const provider = ref<BrowserProvider | null>(null)
+
+const walletAddress = ref(null);
+
 export function useWallet() {
-    const account = ref(null);
+    const { notifyError } = useNotify();
+
 
     const isShowMetaMaskConnectionDialog = ref(false)
 
     const connectWallet = async () => {
-        if (Onboarding.isMetaMaskInstalled()) {
+        try {
+            if (Onboarding.isMetaMaskInstalled()) {
+                const provider = new ethers.BrowserProvider(window.ethereum);
 
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const accounts = await provider.send('eth_requestAccounts', []);
-            account.value = accounts[0];
+                const accounts = await provider.send('eth_requestAccounts', []);
 
-            return account.value;
-        } else {
-            startOnboarding(); // запускаем процесс установки
+                walletAddress.value = accounts[0];
+
+                return provider
+            } else {
+                startOnboarding(); // запускаем процесс установки
+            }
+        }
+        catch (error) {
+            notifyError('Login by Metamask failed failed', error?.message);
+
+            throw error;
         }
     };
 
-    const accountTitle = computed(() => account.value ? shorten(account.value) : 'Connect to Metamask')
+    const accountTitle = computed(() => walletAddress.value ? shorten(walletAddress.value) : 'Connect to Metamask')
 
     return {
+        walletAddress,
         accountTitle,
         connectWallet,
         isShowMetaMaskConnectionDialog,

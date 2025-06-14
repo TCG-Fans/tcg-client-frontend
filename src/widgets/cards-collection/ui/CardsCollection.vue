@@ -11,6 +11,17 @@
 <script setup lang="ts">
 import GameCard from "@/entities/cards/ui/GameCard.vue";
 import { CARDS_MOCK } from "@/shared/mocks/cards.ts";
+import {useCardsApi} from "@/entities/cards/api/useCardsApi.ts";
+import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
+import {onMounted} from "vue";
+
+const { walletAddress } = useWallet()
+
+const { getCardsByWallet, getAllCards } = useCardsApi()
+
+onMounted(() => {
+  getAllCards()
+})
 </script>
 
 <style scoped>
