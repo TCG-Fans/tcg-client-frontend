@@ -1,8 +1,6 @@
 import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
 import {api} from "@/shared/lib/ky/ky.ts";
 import {useNotify} from "@/shared/api/useNotify.ts";
-import {useHealth, usePing} from "@/shared/api/healthcheck.ts";
-import {ethers} from "ethers";
 
 export const useAuthApi = () => {
     const { notifyError } = useNotify();
@@ -29,7 +27,7 @@ export const useAuthApi = () => {
         }
     }
 
-    async function connectAndLogin() {
+    async function signIn() {
         try {
             const provider = await connectWallet();
 
@@ -64,7 +62,12 @@ export const useAuthApi = () => {
         }
     }
 
+    function restoreSession () {
+
+    }
+
     return {
-        connectAndLogin
+        signIn,
+        restoreSession
     }
 }

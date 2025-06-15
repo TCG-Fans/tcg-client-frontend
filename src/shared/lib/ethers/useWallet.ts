@@ -11,13 +11,10 @@ function startOnboarding() {
     onboarding.startOnboarding();
 }
 
-// const provider = ref<BrowserProvider | null>(null)
-
 const walletAddress = ref(null);
 
 export function useWallet() {
     const { notifyError } = useNotify();
-
 
     const isShowMetaMaskConnectionDialog = ref(false)
 
@@ -32,7 +29,7 @@ export function useWallet() {
 
                 return provider
             } else {
-                startOnboarding(); // запускаем процесс установки
+                startOnboarding();
             }
         }
         catch (error) {

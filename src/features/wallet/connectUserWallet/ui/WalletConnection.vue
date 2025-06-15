@@ -1,7 +1,7 @@
 <template>
   <div>
     <Button size="small"
-            @click="connectAndLogin"
+            @click="signIn"
     >
       {{ accountTitle }}
     </Button>
@@ -20,11 +20,11 @@
 import {Button, Dialog } from "primevue";
 import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
 import en from '@/shared/lib/languages/en.ts'
-import {useAuthApi} from "@/features/auth/api";
+import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
 
 const { accountTitle, isShowMetaMaskConnectionDialog } = useWallet();
 
-const { connectAndLogin } = useAuthApi();
+const { signIn } = useAuthApi();
 </script>
 
 <style scoped>

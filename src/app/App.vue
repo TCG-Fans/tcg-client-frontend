@@ -1,7 +1,7 @@
 <template>
-  <main class="w-full h-full">
+  <main class="w-full h-full flex flex-col">
     <Header class="m-2 p-2" />
-    <div class="p-2" >
+    <div class="p-2 flex-shrink-0 flex-grow" >
       <router-view />
     </div>
     <Toast position="top-right" />

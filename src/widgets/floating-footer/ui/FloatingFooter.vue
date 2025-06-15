@@ -1,6 +1,8 @@
 <template>
   <div class="flex justify-center box-border border-2 border-cyb-base rounded-md">
-    <Button icon="pi pi-check" rounded aria-label="Filter" />
+    <Button aria-label="Filter">
+      Battle
+    </Button>
   </div>
 </template>
 

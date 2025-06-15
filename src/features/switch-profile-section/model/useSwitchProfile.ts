@@ -5,7 +5,7 @@ export enum ProfileSection {
     Deck = 'deck',
 }
 
-const activeSection = ref<ProfileSection>(ProfileSection.Collection)
+const activeSection = ref<ProfileSection>(ProfileSection.Deck)
 
 export function useProfileSectionStore() {
     function setSection(section: ProfileSection) {

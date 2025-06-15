@@ -74,14 +74,3 @@ function remove(card) {
   touch-action: pan-y;
 }
 </style>
-
-<!--<style scoped>-->
-<!--.deck-builder {-->
-<!--  max-height: 30vh;-->
-<!--}-->
-<!--.ghost {-->
-<!--  opacity: 0.4;-->
-<!--  border: 2px dashed #00ffe0;-->
-<!--}-->
-
-<!--</style>-->
