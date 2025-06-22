@@ -12,8 +12,8 @@ RUN npm ci
 # Copy source code (excluding node_modules and other ignored files)
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application with base path override for production
+RUN npm run build -- --base=/
 
 # Production stage
 FROM nginx:alpine
