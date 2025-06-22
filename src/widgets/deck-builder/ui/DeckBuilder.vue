@@ -1,23 +1,23 @@
 <template>
-  <div class="flex flex-col md:flex-row gap-6">
-    <div class="collection flex-1 grid grid-cols-2 gap-4">
-      <draggable
-          v-model="collection"
-          group="cards"
-          item-key="id"
-          ghost-class="ghost"
-          :animation="200"
-      >
-        <template #item="{ element }">
-          <div class="bg-cyb-plum/10 p-4 rounded shadow">
-            {{ element.name }}
-          </div>
-        </template>
-      </draggable>
-    </div>
+  <div class="flex flex-col md:flex-row gap-6 border-2 rounded-md border-cyb-base p-1">
+    <ProgressSpinner v-if="props.isCollectionLoading" />
+    <draggable
+        v-else
+        v-model="props.cards"
+        class="collection flex-1 grid grid-cols-3 gap-2 place-items-center"
+        group="cards"
+        item-key="id"
+        ghost-class="ghost"
+        :animation="200"
+    >
+      <template #item="{ element }">
+        <GameCard :card="element" />
+      </template>
+    </draggable>
 
     <DeckStack
         class="fixed bottom-4"
+        :is-loading="false"
         :initial-deck="deck"
         @cardAdded="onAdd"
         @cardRemoved="onRemove"
@@ -25,30 +25,38 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script lang="ts" setup>
+import {onBeforeMount, ref} from 'vue'
 import draggable from 'vuedraggable'
-import DeckStack from '@/entities/deck/ui/DeckStack.vue'
+import DeckStack from '@/features/deck/ui/DeckStack.vue'
+import GameCard from '@/entities/cards/ui/GameCard.vue'
+import {useDeckBuilderApi} from '@/features/deck/model/useDeck.js'
+import type {CardType} from "@/entities/cards/model/cardType.ts";
+import ProgressSpinner from 'primevue/progressspinner'
 
-const collection = ref([
-  { id: 1, name: 'Fire Dragon' },
-  { id: 2, name: 'Water Sprite' },
-  { id: 3, name: 'Earth Golem' },
-])
+const props = defineProps<{
+  isCollectionLoading: boolean,
+  cards: CardType[]
+}>()
 
-const deck = ref([])
+const { getUserDeck, deleteCardFromUserDeck, addCardToUserDeck } = useDeckBuilderApi()
 
-function onAdd(card) {
-  const idx = collection.value.findIndex(c => c.id === card.id)
+const deck = ref<CardType[]>([])
 
-  if (idx !== -1) {
-    collection.value.splice(idx, 1)
-  }
+onBeforeMount(() => {
+  getUserDeck()
+})
+
+async function onAdd(card: CardType) {
+  deck.value.push(card)
+
+  await addCardToUserDeck(card.id)
 }
 
-function onRemove(card) {
+async function onRemove(card: CardType) {
   deck.value = deck.value.filter(c => c.id !== card.id)
-  collection.value.push(card)
+
+  await deleteCardFromUserDeck(card.id)
 }
 </script>
 

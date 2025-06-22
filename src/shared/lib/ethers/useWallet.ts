@@ -18,16 +18,26 @@ export function useWallet() {
 
     const isShowMetaMaskConnectionDialog = ref(false)
 
+    const setAccountInfo = async (ethereum: unknown) => {
+        try {
+            const provider = new ethers.BrowserProvider(ethereum);
+
+            const accounts = await provider.send('eth_requestAccounts', []);
+
+            walletAddress.value = accounts[0];
+
+            return provider
+        } catch (e) {
+            notifyError('Set account info failed', e?.message);
+
+            throw e;
+        }
+    }
+
     const connectWallet = async () => {
         try {
             if (Onboarding.isMetaMaskInstalled()) {
-                const provider = new ethers.BrowserProvider(window.ethereum);
-
-                const accounts = await provider.send('eth_requestAccounts', []);
-
-                walletAddress.value = accounts[0];
-
-                return provider
+                await setAccountInfo(window.ethereum)
             } else {
                 startOnboarding();
             }
@@ -42,6 +52,7 @@ export function useWallet() {
     const accountTitle = computed(() => walletAddress.value ? shorten(walletAddress.value) : 'Connect to Metamask')
 
     return {
+        setAccountInfo,
         walletAddress,
         accountTitle,
         connectWallet,

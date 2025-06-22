@@ -4,7 +4,7 @@ import {api} from "@/shared/lib/ky/ky.ts";
 export const useDeckBuilderApi = () => {
     const { notifyError } = useNotify();
 
-    async function getUserDeck() {
+    const getUserDeck = async () => {
         try {
             return await api.get('deck').json();
         } catch (err: any) {
@@ -14,7 +14,7 @@ export const useDeckBuilderApi = () => {
         }
     }
 
-    const addCardToUserDeck = (id: number) => {
+    const addCardToUserDeck = async (id: number) => {
         try {
             return await api.put(`deck/${id}`).json();
         } catch (err: any) {
@@ -24,7 +24,7 @@ export const useDeckBuilderApi = () => {
         }
     }
 
-    const deleteCardFromUserDeck = (id: number) => {
+    const deleteCardFromUserDeck = async (id: number) => {
         try {
             return await api.delete(`deck/${id}`).json();
         } catch (err: any) {
@@ -34,7 +34,7 @@ export const useDeckBuilderApi = () => {
         }
     }
 
-    const clearUserDeck = () => {
+    const clearUserDeck = async () => {
         try {
             return await api.delete(`deck`).json();
         } catch (err: any) {

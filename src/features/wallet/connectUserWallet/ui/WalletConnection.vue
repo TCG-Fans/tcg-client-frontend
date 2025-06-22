@@ -10,7 +10,7 @@
             modal :header="en.wallet.connectToWalletModalTitle"
             :style="{ width: '25rem' }">
       <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-        <Button>{{ en.wallet.linkForMetamaskDownloading }}</Button>
+        <Button :loading="isLoading">{{ en.wallet.linkForMetamaskDownloading }}</Button>
       </a>
     </Dialog>
   </div>
@@ -21,7 +21,9 @@ import {Button, Dialog } from "primevue";
 import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
 import en from '@/shared/lib/languages/en.ts'
 import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
+import {useAppModel} from "@/shared/app/model/useAppModel.ts";
 
+const { isLoading } = useAppModel()
 const { accountTitle, isShowMetaMaskConnectionDialog } = useWallet();
 
 const { signIn } = useAuthApi();

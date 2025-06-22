@@ -1,15 +1,28 @@
 import {useNotify} from "@/shared/api/useNotify.ts";
 import {api} from "@/shared/lib/ky/ky.ts";
+import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
+import {ref} from "vue";
 
 export const useCardsApi = () => {
+    const isCollectionLoading = ref(true);
+
     const { notifyError } = useNotify();
+
+    const { walletAddress } = useWallet();
 
     async function getAllCards() {
         try {
-            return await api.get('cards').json();
+            isCollectionLoading.value = true
+
+            const { data, count } =  await api.get('cards').json();
+
+            return { data, count };
         } catch (err: any) {
             notifyError('Failed to fetch cards', err?.message);
+
             throw err;
+        } finally {
+            isCollectionLoading.value = false
         }
     }
 
@@ -32,17 +45,28 @@ export const useCardsApi = () => {
         }
     }
 
-    async function getCardsByWallet(walletAddress: string) {
+    async function getCardsByWallet() {
         try {
-            return await api.get(`cards/wallet/${walletAddress}`).json();
+            isCollectionLoading.value = true
+
+            if (!walletAddress.value) {
+               new Error('Wallet address not found')
+            }
+
+            const { data, count } =  await api.get(`cards/wallet/${walletAddress.value}`).json();
+
+            return { data, count };
         } catch (err: any) {
             notifyError('Failed to fetch cards by wallet', err?.message);
+
             throw err;
+        } finally {
+            isCollectionLoading.value = false
         }
     }
 
-
     return {
+        isCollectionLoading,
         getAllCards,
         getCardById,
         getMyCards,

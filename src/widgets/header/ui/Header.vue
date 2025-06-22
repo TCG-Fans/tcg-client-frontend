@@ -14,10 +14,8 @@
 
 <script setup lang="ts">
 import { Avatar } from "primevue";
-import {RouterName} from "@/shared/router/routerNames.ts";
 import WalletConnection from "@/features/wallet/connectUserWallet/ui/WalletConnection.vue";
-
-
+import {RouterName} from "@/shared/router/routerNames.ts";
 </script>
 
 <style scoped>

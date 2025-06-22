@@ -1,11 +1,14 @@
 import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
 import {api} from "@/shared/lib/ky/ky.ts";
 import {useNotify} from "@/shared/api/useNotify.ts";
+import {useAppModel} from "@/shared/app/model/useAppModel.ts";
 
 export const useAuthApi = () => {
+    const { setIsLoading } = useAppModel()
+
     const { notifyError } = useNotify();
 
-    const { connectWallet } = useWallet()
+    const { connectWallet, setAccountInfo, walletAddress: address } = useWallet()
 
     async function getNonce(walletAddress: string) {
         try {
@@ -29,6 +32,8 @@ export const useAuthApi = () => {
 
     async function signIn() {
         try {
+            setIsLoading(true)
+
             const provider = await connectWallet();
 
             if (!provider) {
@@ -59,11 +64,48 @@ export const useAuthApi = () => {
             notifyError('Login by Metamask failed failed', err?.message);
 
             throw err;
+        } finally {
+            setIsLoading(false)
         }
     }
 
-    function restoreSession () {
+    async function restoreSession () {
+        try {
+            const provider = window.ethereum;
 
+            if (!provider) {
+                return
+            }
+
+            setIsLoading(true)
+
+            await setAccountInfo(provider)
+
+            const token = localStorage.getItem('token')
+
+            if (!address.value) {
+                notifyError('wallet address is null', '');
+
+                return
+            }
+
+            if (!token) {
+                const { message } = await getNonce(address.value);
+
+                const signature = await provider.request({
+                    method: 'personal_sign',
+                    params: [message, address.value],
+                });
+
+                const { token, user } = await verifySignature(address.value, signature);
+
+                localStorage.setItem('token', token);
+
+                return { token, user };
+            }
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return {
