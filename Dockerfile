@@ -29,8 +29,11 @@ COPY nginx/ssl.conf /etc/nginx/conf.d/ssl.conf
 # Create directories for SSL certificates
 RUN mkdir -p /etc/letsencrypt/live/chainsmokers.duckdns.org
 
+# Create webroot directory for Let's Encrypt challenge
+RUN mkdir -p /var/www/certbot
+
 # Expose ports
-EXPOSE 443
+EXPOSE 80 443
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
