@@ -1,0 +1,23 @@
+# Ignore certbot data (created at runtime)
+certbot/
+
+# Ignore node_modules (will be installed in container)
+node_modules/
+
+# Ignore git
+.git/
+
+# Ignore logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore deployment files that aren't needed in container
+.github/
+DEPLOYMENT.md
+README-Docker.md
+init-letsencrypt.sh

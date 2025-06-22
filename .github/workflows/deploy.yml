@@ -28,11 +28,19 @@ jobs:
         # Create an archive with required files for frontend
         tar -czf deploy.tar.gz \
           dist \
+          src \
+          public \
+          index.html \
           package*.json \
           Dockerfile \
+          .dockerignore \
           docker-compose.yml \
           nginx/ \
-          init-letsencrypt.sh
+          init-letsencrypt.sh \
+          vite.config.ts \
+          tsconfig*.json \
+          tailwind.config.js \
+          postcss.config.js
 
     - name: Setup SSH
       run: |
