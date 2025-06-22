@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 import MainPage from "@/pages/MainPage/ui/MainPage.vue";
 import ProfilePage from "@/pages/ProfilePage/ui/ProfilePage.vue";
@@ -12,7 +12,7 @@ const routes = [
 ]
 
 export const APP_ROUTER = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory('/tcg-client-frontend/'),
   scrollBehavior() {
     return { top: 0 }
   },
