@@ -8,23 +8,30 @@ const isConnected = ref(false)
 const listeners = new Map<string, Callback[]>()
 
 export function useWebSocket() {
-    const connect = (token: string) => {
-        if (socket.value?.connected) return
+    const connect = (token: string | null) => {
+        if (socket.value?.connected || !token) {
+            console.warn('socket.value?.connected || !token')
 
-        // Можно прокинуть token в query или через отдельное событие, зависит от бекенда
-        socket.value = io(import.meta.env.VITE_TCG_WS_URL, {
-            autoConnect: false,
-            transports: ['websocket'],
-            auth: { token }
-        })
+            return
+        }
+
+        socket.value = io('https://chainsmokers.duckdns.org', {
+            path: '/socket.io'
+        });
+
+        console.warn('socket.value', socket.value.on)
 
         socket.value.on('connect', () => {
             isConnected.value = true
-            // Можно дополнительно emit'нуть authenticate, если бекенд этого ждёт
-            // socket.value?.emit('authenticate', { token })
+
+            if (token) {
+                socket.value?.emit('authenticate', { token })
+            }
         })
 
         socket.value.on('disconnect', () => {
+            console.warn('socket.value?.connected || !token')
+
             isConnected.value = false
         })
 
@@ -42,10 +49,8 @@ export function useWebSocket() {
 
     const on = (event: string, callback: Callback) => {
         const list = listeners.get(event) || []
-        listeners.set(event, [...list, callback])
 
-        // Подписка через socket.io для прямых подписок (опционально)
-        // socket.value?.on(event, callback)
+        listeners.set(event, [...list, callback])
     }
 
     onUnmounted(() => {

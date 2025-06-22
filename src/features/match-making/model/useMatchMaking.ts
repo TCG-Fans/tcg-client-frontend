@@ -20,9 +20,10 @@ export function useMatchmaking() {
     const { notifyError } = useNotify();
 
     const { connect, on, isConnected } = useWebSocket()
-    const token = localStorage.getItem('token')
 
     const init = () => {
+        const token = localStorage.getItem('token')
+
         connect(token)
 
         MATCH_MAKING_EVENTS.forEach(event => {
