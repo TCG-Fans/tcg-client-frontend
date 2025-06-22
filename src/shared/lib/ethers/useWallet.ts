@@ -14,7 +14,7 @@ function startOnboarding() {
 const walletAddress = ref(null);
 
 export function useWallet() {
-    const { notifyError } = useNotify();
+    const { notifyError, notify } = useNotify();
 
     const isShowMetaMaskConnectionDialog = ref(false)
 
@@ -51,8 +51,23 @@ export function useWallet() {
 
     const accountTitle = computed(() => walletAddress.value ? shorten(walletAddress.value) : 'Connect to Metamask')
 
+    const copyAddress = async () => {
+        try {
+            if (navigator && navigator.clipboard && walletAddress.value) {
+                await navigator.clipboard.writeText(walletAddress.value)
+
+                notify('Wallet address copied', 'info', walletAddress.value)
+            }
+        } catch (e) {
+            notifyError('Copy wallet address failed', e?.message);
+
+            throw e;
+        }
+    }
+
     return {
         setAccountInfo,
+        copyAddress,
         walletAddress,
         accountTitle,
         connectWallet,
