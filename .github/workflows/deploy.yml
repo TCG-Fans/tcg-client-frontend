@@ -38,6 +38,7 @@ jobs:
           nginx/ \
           init-letsencrypt.sh \
           vite.config.ts \
+          vite.config.prod.ts \
           tsconfig*.json \
           tailwind.config.js \
           postcss.config.js

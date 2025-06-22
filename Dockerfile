@@ -14,7 +14,7 @@ COPY . .
 
 # Set environment variable to override base path and build
 ENV VITE_BASE_PATH=/
-RUN npm run build
+RUN npm run build -- --config vite.config.prod.ts
 
 # Production stage
 FROM nginx:alpine
