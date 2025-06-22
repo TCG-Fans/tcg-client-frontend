@@ -12,13 +12,9 @@ RUN npm ci
 # Copy source code (excluding node_modules and other ignored files)
 COPY . .
 
-# Debug: List files to see what was copied
-RUN ls -la
-RUN ls -la src/ || echo "src directory not found"
-RUN ls -la public/ || echo "public directory not found"
-
-# Build the application with base path override for production
-RUN npm run build -- --base=/
+# Set environment variable to override base path and build
+ENV VITE_BASE_PATH=/
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine
