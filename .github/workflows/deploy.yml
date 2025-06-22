@@ -54,91 +54,69 @@ jobs:
         # Copy archive directly to EC2
         scp -i ~/.ssh/id_rsa deploy.tar.gz ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/frontend-deploy.tar.gz
 
-    - name: Deploy Frontend to EC2 instance
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
+    - name: Deploy to EC2
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
           echo "Starting frontend deployment..."
           
-          # Create frontend deployment directory
-          mkdir -p ~/frontend
-          cd ~/frontend
+          # Navigate to frontend directory
+          cd ~/frontend || { echo "Frontend directory not found"; exit 1; }
           
-          # Copy archive from home directory
           echo "Copying frontend archive..."
-          cp ~/frontend-deploy.tar.gz ./deploy.tar.gz
+          # Extract the deployment archive
+          if [ -f ~/frontend-deploy.tar.gz ]; then
+            echo "Unpacking frontend archive..."
+            tar -xzf ~/frontend-deploy.tar.gz
+            rm ~/frontend-deploy.tar.gz
+          else
+            echo "Deployment archive not found!"
+            exit 1
+          fi
           
-          # Unpack archive
-          echo "Unpacking frontend archive..."
-          tar -xzf deploy.tar.gz
-          rm deploy.tar.gz
-          rm ~/frontend-deploy.tar.gz  # Remove original archive
-          
-          # Make init script executable
-          chmod +x init-letsencrypt.sh
-          
-          # Check Docker installation
+          # Install Docker and Docker Compose if not present
           if ! command -v docker &> /dev/null; then
             echo "Installing Docker..."
-            sudo apt update
-            sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-            sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-            sudo apt update
-            sudo apt install -y docker-ce
-            sudo usermod -aG docker $USER
+            sudo apt-get update
+            sudo apt-get install -y docker.io docker-compose-plugin
             sudo systemctl start docker
             sudo systemctl enable docker
+            sudo usermod -aG docker $USER
           fi
           
-          # Check Docker Compose installation
-          if ! command -v docker-compose &> /dev/null && ! command -v docker compose &> /dev/null; then
-            echo "Installing Docker Compose..."
-            sudo apt install -y docker-compose-plugin || {
-              sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-              sudo chmod +x /usr/local/bin/docker-compose
-              sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-            }
-          fi
-          
-          # Determine Docker Compose command
-          if command -v docker compose &> /dev/null; then
-            DOCKER_COMPOSE_CMD="docker compose"
-          else
-            DOCKER_COMPOSE_CMD="docker-compose"
-          fi
-          
-          # Create shared network if it doesn't exist
           echo "Creating shared network..."
+          # Create shared Docker network for backend communication
           sudo docker network create chainlink-tcg 2>/dev/null || echo "Network chainlink-tcg already exists"
           
-          # Stop existing frontend containers
           echo "Stopping existing frontend containers..."
-          sudo $DOCKER_COMPOSE_CMD down || true
+          # Stop and remove existing containers
+          sudo docker compose down
           
-          # Check if SSL certificates exist
-          if [ ! -d "./certbot/conf/live/ec2-3-83-215-13.compute-1.amazonaws.com" ]; then
+          echo "Building and starting frontend containers..."
+          # Build and start the frontend
+          sudo docker compose build
+          sudo docker compose up -d
+          
+          # Wait a moment for containers to start
+          sleep 5
+          
+          # Check if SSL certificates exist, if not, run setup
+          if [ ! -f "./certbot/conf/live/chainsmokers.duckdns.org/fullchain.pem" ]; then
             echo "SSL certificates not found. Running Let's Encrypt setup..."
             sudo ./init-letsencrypt.sh
           else
-            echo "SSL certificates found. Starting frontend..."
-            sudo $DOCKER_COMPOSE_CMD up -d --build
+            echo "SSL certificates found, skipping certificate setup"
           fi
           
-          # Clean up old images
           echo "Cleaning unused Docker images..."
-          sudo docker image prune -af
+          # Clean up unused Docker images to save space
+          sudo docker image prune -f
           
-          # Show running containers
           echo "Frontend containers status:"
-          sudo docker ps | grep tcg-frontend || echo "Frontend container not running"
+          sudo docker compose ps
           
-          # Show logs for debugging
           echo "Recent frontend logs:"
-          sudo $DOCKER_COMPOSE_CMD logs --tail=20 nginx || true
+          sudo docker compose logs --tail=20 nginx
           
           echo "Frontend deployment completed successfully!"
-          echo "Frontend should be available at: https://ec2-3-83-215-13.compute-1.amazonaws.com"
+          echo "Frontend should be available at: https://chainsmokers.duckdns.org"
+        EOF

@@ -12,8 +12,7 @@ RUN npm ci
 # Copy source code (excluding node_modules and other ignored files)
 COPY . .
 
-# Set environment variable to override base path and build
-ENV VITE_BASE_PATH=/
+# Build the application
 RUN npm run build
 
 # Production stage
