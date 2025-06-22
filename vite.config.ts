@@ -6,7 +6,7 @@ import tailwindAutoReference from "vite-plugin-vue-tailwind-auto-reference";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: 'tcg-client-frontend',
+  base: '/tcg-client-frontend/',
   plugins: [vue(), tailwindcss(), tailwindAutoReference()],
   resolve: {
     alias: {
