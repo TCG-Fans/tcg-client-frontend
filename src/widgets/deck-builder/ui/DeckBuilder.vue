@@ -17,7 +17,7 @@
 
     <DeckStack
         class="fixed bottom-4"
-        :is-loading="false"
+        :is-loading="isUserDeckLoaded"
         :initial-deck="deck"
         @cardAdded="onAdd"
         @cardRemoved="onRemove"
@@ -39,12 +39,14 @@ const props = defineProps<{
   cards: CardType[]
 }>()
 
-const { getUserDeck, deleteCardFromUserDeck, addCardToUserDeck } = useDeckBuilderApi()
+const { getUserDeck, deleteCardFromUserDeck, addCardToUserDeck, isUserDeckLoaded } = useDeckBuilderApi()
 
 const deck = ref<CardType[]>([])
 
 onBeforeMount(() => {
-  getUserDeck()
+  getUserDeck().then(res => {
+    deck.value = res.cards
+  })
 })
 
 async function onAdd(card: CardType) {

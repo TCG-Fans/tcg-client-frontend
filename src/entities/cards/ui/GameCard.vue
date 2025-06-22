@@ -1,6 +1,6 @@
 <template>
   <div
-      class="w-60 rounded-2xl shadow-lg bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700 p-4 flex flex-col relative flex-shrink-0"
+      class="w-60 rounded-2xl shadow-lg bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700 p-4 flex flex-col relative"
       :class="{'game-card_deckMode': props.mode === 'deck'}"
   >
     <div class="flex items-center justify-between mb-2">
@@ -28,7 +28,7 @@
     </div>
     <div class="flex items-center justify-between mt-auto">
       <span class="text-2xl font-bold text-cyan-400 drop-shadow">{{ card.power }}</span>
-      <div class="text-xs text-slate-400">{{ Object.keys(card.attributes).length ? '[Effect]' : '' }}</div>
+      <div v-if="card.attributes" class="text-xs text-slate-400">{{ Object.keys(card.attributes).length ? '[Effect]' : '' }}</div>
     </div>
   </div>
 </template>
@@ -54,6 +54,10 @@ const props = defineProps<{
 </script>
 
 <style scoped>
+.game-card_deckMode {
+  @apply flex-shrink-0;
+}
+
 .game-card_deckMode img {
   display: none;
 }

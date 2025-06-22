@@ -1,16 +1,25 @@
 import {useNotify} from "@/shared/api/useNotify.ts";
 import {api} from "@/shared/lib/ky/ky.ts";
+import {ref} from "vue";
 
 export const useDeckBuilderApi = () => {
     const { notifyError } = useNotify();
 
+    const isUserDeckLoaded = ref(false)
+
     const getUserDeck = async () => {
         try {
-            return await api.get('deck').json();
+            isUserDeckLoaded.value = true
+
+            const { data } =  await api.get('deck').json();
+
+            return data.deck
         } catch (err: any) {
             notifyError('Failed to fetch user deck', err?.message);
 
             throw err;
+        } finally {
+            isUserDeckLoaded.value = false
         }
     }
 
@@ -48,6 +57,7 @@ export const useDeckBuilderApi = () => {
         getUserDeck,
         addCardToUserDeck,
         deleteCardFromUserDeck,
-        clearUserDeck
+        clearUserDeck,
+        isUserDeckLoaded
     }
 }

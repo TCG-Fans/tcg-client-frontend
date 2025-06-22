@@ -50,7 +50,16 @@ const deck = ref([...props.initialDeck])
 const deckTitle = computed(() => props.isLoading ? en.userDeck.deckIsLoading : `${en.userDeck.title} ${deck.value.length}`)
 
 function handleChange(evt) {
-  emit(evt.added ?'cardAdded' : 'cardRemoved', evt.added.element)
+  if (evt.added) {
+    emit('cardAdded', evt.added.element)
+
+    return
+  }
+
+
+  if (evt.removed) {
+    emit('cardRemoved', evt.removed.element)
+  }
 }
 </script>
 

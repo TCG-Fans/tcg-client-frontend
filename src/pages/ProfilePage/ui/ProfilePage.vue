@@ -35,13 +35,15 @@ const { getCardsByWallet, getAllCards, isCollectionLoading } = useCardsApi()
 const userCardCollections = ref<CardType[]>([])
 
 onMounted(() => {
-  getAllCards().then(cards => {
-    userCardCollections.value = cards.data
-  })
-
-  // getCardsByWallet().then(cards => {
+  // getAllCards().then(cards => {
   //   userCardCollections.value = cards.data
   // })
+
+  getCardsByWallet().then(cards => {
+    console.warn('data', cards.data)
+
+    userCardCollections.value = cards.data
+  })
 })
 </script>
 
