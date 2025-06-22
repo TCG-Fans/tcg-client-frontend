@@ -32,8 +32,7 @@ jobs:
           Dockerfile \
           docker-compose.yml \
           nginx/ \
-          init-letsencrypt.sh \
-          README-Docker.md
+          init-letsencrypt.sh
 
     - name: Setup SSH
       run: |
