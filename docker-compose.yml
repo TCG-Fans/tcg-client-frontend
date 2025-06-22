@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: .
+    container_name: tcg-frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - chainlink-tcg
+    restart: unless-stopped
+    depends_on:
+      - certbot
+
+  certbot:
+    image: certbot/certbot
+    container_name: tcg-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    restart: unless-stopped
+
+networks:
+  chainlink-tcg:
+    external: true

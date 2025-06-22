@@ -1,0 +1,137 @@
+name: Deploy Frontend to AWS EC2
+
+on:
+  push:
+    branches: [ main ]  # Replace with your main branch (main or master)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build project
+      run: npm run build
+
+    - name: Create deployment package
+      run: |
+        # Create an archive with required files for frontend
+        tar -czf deploy.tar.gz \
+          dist \
+          package*.json \
+          Dockerfile \
+          docker-compose.yml \
+          nginx/ \
+          init-letsencrypt.sh \
+          README-Docker.md
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Copy deployment package to EC2
+      run: |
+        # Copy archive directly to EC2
+        scp -i ~/.ssh/id_rsa deploy.tar.gz ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/frontend-deploy.tar.gz
+
+    - name: Deploy Frontend to EC2 instance
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          echo "Starting frontend deployment..."
+          
+          # Create frontend deployment directory
+          mkdir -p ~/frontend
+          cd ~/frontend
+          
+          # Copy archive from home directory
+          echo "Copying frontend archive..."
+          cp ~/frontend-deploy.tar.gz ./deploy.tar.gz
+          
+          # Unpack archive
+          echo "Unpacking frontend archive..."
+          tar -xzf deploy.tar.gz
+          rm deploy.tar.gz
+          rm ~/frontend-deploy.tar.gz  # Remove original archive
+          
+          # Make init script executable
+          chmod +x init-letsencrypt.sh
+          
+          # Check Docker installation
+          if ! command -v docker &> /dev/null; then
+            echo "Installing Docker..."
+            sudo apt update
+            sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+            sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+            sudo apt update
+            sudo apt install -y docker-ce
+            sudo usermod -aG docker $USER
+            sudo systemctl start docker
+            sudo systemctl enable docker
+          fi
+          
+          # Check Docker Compose installation
+          if ! command -v docker-compose &> /dev/null && ! command -v docker compose &> /dev/null; then
+            echo "Installing Docker Compose..."
+            sudo apt install -y docker-compose-plugin || {
+              sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+              sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+            }
+          fi
+          
+          # Determine Docker Compose command
+          if command -v docker compose &> /dev/null; then
+            DOCKER_COMPOSE_CMD="docker compose"
+          else
+            DOCKER_COMPOSE_CMD="docker-compose"
+          fi
+          
+          # Create shared network if it doesn't exist
+          echo "Creating shared network..."
+          sudo docker network create chainlink-tcg 2>/dev/null || echo "Network chainlink-tcg already exists"
+          
+          # Stop existing frontend containers
+          echo "Stopping existing frontend containers..."
+          sudo $DOCKER_COMPOSE_CMD down || true
+          
+          # Check if SSL certificates exist
+          if [ ! -d "./certbot/conf/live/ec2-3-83-215-13.compute-1.amazonaws.com" ]; then
+            echo "SSL certificates not found. Running Let's Encrypt setup..."
+            sudo ./init-letsencrypt.sh
+          else
+            echo "SSL certificates found. Starting frontend..."
+            sudo $DOCKER_COMPOSE_CMD up -d --build
+          fi
+          
+          # Clean up old images
+          echo "Cleaning unused Docker images..."
+          sudo docker image prune -af
+          
+          # Show running containers
+          echo "Frontend containers status:"
+          sudo docker ps | grep tcg-frontend || echo "Frontend container not running"
+          
+          # Show logs for debugging
+          echo "Recent frontend logs:"
+          sudo $DOCKER_COMPOSE_CMD logs --tail=20 nginx || true
+          
+          echo "Frontend deployment completed successfully!"
+          echo "Frontend should be available at: https://ec2-3-83-215-13.compute-1.amazonaws.com"

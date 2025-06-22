@@ -1,0 +1,47 @@
+name: Setup SSL Certificates
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+jobs:
+  setup-ssl:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Copy SSL setup files to EC2
+      run: |
+        # Copy only SSL-related files
+        scp -i ~/.ssh/id_rsa init-letsencrypt.sh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/
+        scp -i ~/.ssh/id_rsa docker-compose.yml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/
+        scp -r -i ~/.ssh/id_rsa nginx/ ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:~/
+
+    - name: Initialize SSL Certificates
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          echo "Setting up SSL certificates..."
+          
+          # Make script executable
+          chmod +x ~/init-letsencrypt.sh
+          
+          # Create shared network
+          sudo docker network create chainlink-tcg 2>/dev/null || echo "Network already exists"
+          
+          # Run SSL setup
+          cd ~
+          sudo ./init-letsencrypt.sh
+          
+          echo "SSL setup completed!"
+          echo "You can now run the main deployment workflow."
