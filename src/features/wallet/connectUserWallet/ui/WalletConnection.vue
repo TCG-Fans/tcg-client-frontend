@@ -1,7 +1,8 @@
 <template>
   <div>
     <Button size="small"
-            @click="signIn"
+            :loading="isLoading"
+            @click="handleWalletSignIn"
     >
       {{ accountTitle }}
     </Button>
@@ -24,9 +25,19 @@ import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
 import {useAppModel} from "@/shared/app/model/useAppModel.ts";
 
 const { isLoading } = useAppModel()
-const { accountTitle, isShowMetaMaskConnectionDialog } = useWallet();
+const { accountTitle, isShowMetaMaskConnectionDialog, copyAddress } = useWallet();
 
 const { signIn } = useAuthApi();
+
+const handleWalletSignIn = () => {
+  if (accountTitle.value) {
+    copyAddress()
+
+    return
+  }
+
+  signIn()
+}
 </script>
 
 <style scoped>
