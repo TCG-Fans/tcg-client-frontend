@@ -5,10 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "main -d dist"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@metamask/onboarding": "^1.0.1",
