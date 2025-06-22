@@ -1,46 +1,55 @@
 import { ref, onUnmounted } from 'vue'
+import { io, Socket } from 'socket.io-client'
 
 type Callback = (data: any) => void
 
-const ws = ref<WebSocket | null>(null)
+const socket = ref<Socket | null>(null)
 const isConnected = ref(false)
 const listeners = new Map<string, Callback[]>()
 
 export function useWebSocket() {
     const connect = (token: string) => {
-        if (ws.value && ws.value.readyState === WebSocket.OPEN) return
+        if (socket.value?.connected) return
 
-        ws.value = new WebSocket(import.meta.env.VITE_TCG_WS_URL)
+        // Можно прокинуть token в query или через отдельное событие, зависит от бекенда
+        socket.value = io(import.meta.env.VITE_TCG_WS_URL, {
+            autoConnect: false,
+            transports: ['websocket'],
+            auth: { token }
+        })
 
-        ws.value.onopen = () => {
+        socket.value.on('connect', () => {
             isConnected.value = true
-            send('authenticate', { token })
-        }
+            // Можно дополнительно emit'нуть authenticate, если бекенд этого ждёт
+            // socket.value?.emit('authenticate', { token })
+        })
 
-        ws.value.onmessage = (event) => {
-            const { event: evt, data } = JSON.parse(event.data)
-            listeners.get(evt)?.forEach(cb => cb(data))
-        }
-
-        ws.value.onclose = () => {
+        socket.value.on('disconnect', () => {
             isConnected.value = false
-            ws.value = null
-        }
+        })
+
+        // Общий обработчик всех событий
+        socket.value.onAny((event, data) => {
+            listeners.get(event)?.forEach(cb => cb(data))
+        })
+
+        socket.value.connect()
     }
 
     const send = (event: string, data: any) => {
-        if (ws.value?.readyState === WebSocket.OPEN) {
-            ws.value.send(JSON.stringify({ event, data }))
-        }
+        socket.value?.emit(event, data)
     }
 
     const on = (event: string, callback: Callback) => {
         const list = listeners.get(event) || []
         listeners.set(event, [...list, callback])
+
+        // Подписка через socket.io для прямых подписок (опционально)
+        // socket.value?.on(event, callback)
     }
 
     onUnmounted(() => {
-        ws.value?.close()
+        socket.value?.disconnect()
     })
 
     return {
