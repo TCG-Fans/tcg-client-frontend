@@ -30,6 +30,7 @@ jobs:
           dist \
           package*.json \
           Dockerfile \
+          .dockerignore \
           docker-compose.yml \
           nginx/ \
           init-letsencrypt.sh
