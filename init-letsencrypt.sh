@@ -2,10 +2,10 @@
 
 # Initialize Let's Encrypt certificates for TCG Frontend
 
-domains=(ec2-3-83-215-13.compute-1.amazonaws.com)
+domains=(chainsmokers.duckdns.org)
 rsa_key_size=4096
 data_path="./certbot"
-email="andrey.a.sotnikov@gmail.com"
+email="andrey.a.sotnikov@gmail.com" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then

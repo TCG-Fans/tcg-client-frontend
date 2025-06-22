@@ -27,7 +27,7 @@ COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/ssl.conf /etc/nginx/conf.d/ssl.conf
 
 # Create directories for SSL certificates
-RUN mkdir -p /etc/letsencrypt/live/ec2-3-83-215-13.compute-1.amazonaws.com
+RUN mkdir -p /etc/letsencrypt/live/chainsmokers.duckdns.org
 
 # Expose ports
 EXPOSE 443
