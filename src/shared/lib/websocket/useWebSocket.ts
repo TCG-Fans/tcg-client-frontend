@@ -26,13 +26,11 @@ export function useWebSocket() {
             isConnected.value = true
 
             if (token) {
-                socket.value?.emit('authenticate', { token })
+                socket.value?.emit('authenticate', token )
             }
         })
 
         socket.value.on('disconnect', () => {
-            console.warn('socket.value?.connected || !token')
-
             isConnected.value = false
         })
 
