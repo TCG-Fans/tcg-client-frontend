@@ -15,7 +15,7 @@ export function useWebSocket() {
             return
         }
 
-        socket.value = io('', {
+        socket.value = io('https://chainsmokers.duckdns.org', {
             path: '/socket.io'
         });
 
