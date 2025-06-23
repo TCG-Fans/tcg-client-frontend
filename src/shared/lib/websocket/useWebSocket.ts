@@ -19,6 +19,7 @@ export function useWebSocket() {
             path: '/socket.io'
         });
 
+
         console.warn('socket.value', socket.value.on)
 
         socket.value.on('connect', () => {

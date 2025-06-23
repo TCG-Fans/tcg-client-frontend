@@ -26,22 +26,16 @@ import CardsCollection from "@/widgets/cards-collection/ui/CardsCollection.vue";
 import DeckBuilder from "@/widgets/deck-builder/ui/DeckBuilder.vue";
 import {useCardsApi} from "@/entities/cards/api/useCardsApi.ts";
 import {onMounted, ref} from "vue";
-import {CardType} from "@/entities/cards/model/cardType.ts";
+import type {CardType} from "@/entities/cards/model/cardType.ts";
 
 const { activeSection } = useProfileSectionStore()
 
-const { getCardsByWallet, getAllCards, isCollectionLoading } = useCardsApi()
+const { getCardsByWallet, isCollectionLoading } = useCardsApi()
 
 const userCardCollections = ref<CardType[]>([])
 
 onMounted(() => {
-  // getAllCards().then(cards => {
-  //   userCardCollections.value = cards.data
-  // })
-
   getCardsByWallet().then(cards => {
-    console.warn('data', cards.data)
-
     userCardCollections.value = cards.data
   })
 })

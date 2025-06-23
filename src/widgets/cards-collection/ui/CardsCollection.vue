@@ -21,7 +21,7 @@
 import GameCard from "@/entities/cards/ui/GameCard.vue";
 import ProgressSpinner from 'primevue/progressspinner';
 import en from '@/shared/lib/languages/en.ts'
-import { CardType } from "@/entities/cards/model/cardType.ts";
+import type {CardType} from "@/entities/cards/model/cardType.ts";
 
 const props = defineProps<{
   isCollectionLoading: boolean,
