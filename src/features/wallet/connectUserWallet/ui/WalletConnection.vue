@@ -8,9 +8,8 @@
         {{ accountTitle }}
       </Button>
 
-      <Button v-if="isShowMintButton"
-               size="small"
-              :loading="isLoading"
+      <Button size="small"
+              :loading="isLoading || isMinting"
               @click="startMint(1, 1, '8')"
       >
         Mint cards
@@ -41,7 +40,7 @@ const { accountTitle, isShowMetaMaskConnectionDialog, copyAddress } = useWallet(
 
 const { signIn } = useAuthApi();
 
-const { startMint, isShowMintButton } = useMintModel()
+const { startMint, isShowMintButton, isMinting } = useMintModel()
 
 const handleWalletSignIn = () => {
   if (accountTitle.value) {

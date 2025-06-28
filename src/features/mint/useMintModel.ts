@@ -2,7 +2,6 @@ import { ref } from 'vue'
 import cardpoolAbi from '@/shared/abi/CardpoolMint.json'
 import coinAbi from '@/shared/abi/Coin.json'
 import { createWalletClient, custom, parseUnits } from 'viem'
-import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
 import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
 import {useWebSocket} from "@/shared/lib/websocket/useWebSocket.ts";
 import {useNotify} from "@/shared/api/useNotify.ts";
@@ -20,11 +19,9 @@ const isShowMintButton = ref(false)
 export function useMintModel() {
     const { notify, notifyError } = useNotify()
 
-    const { signIn } = useAuthApi()
-
     const { walletAddress } = useWallet()
 
-    const { connect, on } = useWebSocket()
+    const { connect, on, isConnected } = useWebSocket()
 
     const isMinting = ref(false)
 
@@ -32,7 +29,7 @@ export function useMintModel() {
 
     const token = ref<string | null>(localStorage.getItem('token'))
 
-    // Получение viem-клиента
+    // Get viem-client
     function getViemClient() {
         const provider = window.ethereum
 
@@ -46,24 +43,7 @@ export function useMintModel() {
         })
     }
 
-    // 1. Авторизация
-    async function ensureAuth() {
-        if (!token.value) {
-            const result = await signIn()
-
-            if (!result?.token) {
-                return
-            }
-
-            token.value = result.token
-
-            localStorage.setItem('token', token.value)
-        }
-
-        return token.value
-    }
-
-    // 3. Открываем WS и слушаем mint-события
+    // Create card event listening
     function subscribeOnMinted() {
         on(MINT_EVENT, (data) => {
             mintedCards.value = data.cards
@@ -100,12 +80,14 @@ export function useMintModel() {
         })
     }
 
-    // 6. Главный flow минта
+    // Minting card
     async function startMint(packId: number, packAmount: number, approveAmount: string) {
         isMinting.value = true
 
         try {
-            connect(token.value)
+            if (!isConnected.value) {
+                connect(token.value)
+            }
 
             subscribeOnMinted()
 
@@ -113,9 +95,9 @@ export function useMintModel() {
 
             await mintPack(packId, packAmount)
 
-            isShowMintButton.value = false
+            // isShowMintButton.value = false
         } catch (err: any) {
-            isShowMintButton.value = true
+            // isShowMintButton.value = true
 
             notifyError(en.mintNotification.error, err?.message)
 
@@ -126,11 +108,9 @@ export function useMintModel() {
     }
 
     return {
-        isMinting,
         mintedCards,
+        isMinting,
         startMint,
-        ensureAuth,
-        approveTokens,
         mintPack,
         isShowMintButton
     }
