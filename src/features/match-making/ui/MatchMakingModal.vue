@@ -13,16 +13,16 @@
               <Button @click="joinQueue">Join</Button>
               <Button @click="leaveQueue">Leave</Button>
               <Button @click="confirmMatch">Confirm</Button>
-              <Button @click="loadStatus">Status</Button>
             </div>
 
-            <pre class="bg-white rounded p-2 text-sm text-gray-800 whitespace-pre-wrap mb-2">
-              {{ status }}
-            </pre>
-
+            <div>Connection logs:</div>
             <ul class="text-xs text-gray-600 space-y-1 max-h-48 overflow-y-auto">
               <li v-for="log in logs" :key="log">{{ log }}</li>
             </ul>
+
+            <pre class="rounded p-2 text-sm text-gray-800 whitespace-pre-wrap mb-2">
+              {{ status }}
+            </pre>
           </div>
         </transition>
       </div>
@@ -37,7 +37,7 @@ import {useMatchmaking} from "@/features/match-making/model/useMatchMaking.ts";
 
 const {
   status, logs, closeModal,
-  joinQueue, leaveQueue, confirmMatch, loadStatus
+  joinQueue, leaveQueue, confirmMatch
 } = useMatchmaking()
 
 const panelRef = ref<HTMLElement | null>(null)

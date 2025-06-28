@@ -1,9 +1,12 @@
 <template>
   <main class="w-full h-full flex flex-col">
     <Header class="m-2 p-2" />
-    <div class="p-2 flex-shrink-0 flex-grow" >
-      <ProgressSpinner v-if="isLoading"  />
-      <router-view v-else />
+    <div v-if="isLoading"
+         class="p-2 flex-shrink-0 flex-grow flex justify-center items-center">
+      <ProgressSpinner />
+    </div>
+    <div v-else class="p-2 flex-shrink-0 flex-grow">
+      <router-view />
     </div>
     <Toast position="top-right" />
     <MatchMakingModal v-if="isOpenMatchmakingModal" />

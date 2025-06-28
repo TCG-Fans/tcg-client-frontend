@@ -1,11 +1,12 @@
 <template>
-  <div class="flex items-center justify-center">
-    MainPage
+  <div class="flex justify-center items-center h-full relative">
+    <MainPageAnimation />
+    <FloatingFooter class="fixed z-30 left-0  w-full p-2 bottom-0" />
   </div>
-  <FloatingFooter class="left-0 block w-full p-2 fixed bottom-0" />
 </template>
 
 <script setup lang="ts">
 
 import FloatingFooter from "@/widgets/floating-footer/ui/FloatingFooter.vue";
+import MainPageAnimation from "@/widgets/main-page-animation/ui/MainPageAnimation.vue"
 </script>

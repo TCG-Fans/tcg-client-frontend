@@ -1,7 +1,7 @@
 <template>
   <header class="flex justify-between items-center gap-1 border-cyb-base rounded-md border-solid border-2">
     <router-link :to="{ name: RouterName.MainPage }">
-      <div>Logo</div>
+      <img class="w-[32px] h-[32px]" src="/tcg-logo.png" alt="tcg-logo">
     </router-link>
     <div class="flex gap-1 items-center">
       <WalletConnection />
