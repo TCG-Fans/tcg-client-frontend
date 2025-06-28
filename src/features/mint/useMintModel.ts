@@ -106,14 +106,14 @@ export function useMintModel() {
         isMinting.value = true
 
         try {
-            await ensureAuth()
-
-            const { count } = await getCardsByWallet()
-
-
-            if (count) {
-                return
-            }
+            // await ensureAuth()
+            //
+            // const { count } = await getCardsByWallet()
+            //
+            //
+            // if (count) {
+            //     return
+            // }
 
             connect(token.value)
 
@@ -135,6 +135,7 @@ export function useMintModel() {
         isMinting,
         mintedCards,
         startMint,
+        ensureAuth,
         approveTokens,
         mintPack
     }

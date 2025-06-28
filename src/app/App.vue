@@ -15,15 +15,18 @@ import Header from "@/widgets/header/ui/Header.vue";
 import {Toast} from "primevue";
 import {useMatchmaking} from "@/features/match-making/model/useMatchMaking.ts";
 import MatchMakingModal from "@/features/match-making/ui/MatchMakingModal.vue";
-import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
 import {useAppModel} from "@/shared/app/model/useAppModel.ts";
 import ProgressSpinner from "primevue/progressspinner";
+import {useLaunchApp} from "@/app/model/useLaunchApp.ts";
+import {onBeforeMount} from "vue";
 
 const { isOpenMatchmakingModal } = useMatchmaking()
 
 const { isLoading } = useAppModel()
 
-const { restoreSession } = useAuthApi()
+const { launchApp } = useLaunchApp()
 
-restoreSession()
+onBeforeMount(async () => {
+ await launchApp()
+})
 </script>
