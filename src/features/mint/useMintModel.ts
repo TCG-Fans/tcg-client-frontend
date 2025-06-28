@@ -3,7 +3,6 @@ import cardpoolAbi from '@/shared/abi/CardpoolMint.json'
 import coinAbi from '@/shared/abi/Coin.json'
 import { createWalletClient, custom, parseUnits } from 'viem'
 import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
-import {useCardsApi} from "@/entities/cards/api/useCardsApi.ts";
 import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
 import {useWebSocket} from "@/shared/lib/websocket/useWebSocket.ts";
 import {useNotify} from "@/shared/api/useNotify.ts";
@@ -16,12 +15,12 @@ const COIN_ADDRESS = '0xcD8415372BCB0ACfD685367251e215A3C5D8A845'
 
 const CARDPOOL_ADDRESS = '0xdcBf6f32F80172A9Ae9bD0E12D04904f6daCE46E'
 
+const isShowMintButton = ref(false)
+
 export function useMintModel() {
     const { notify, notifyError } = useNotify()
 
     const { signIn } = useAuthApi()
-
-    const { getCardsByWallet } = useCardsApi()
 
     const { walletAddress } = useWallet()
 
@@ -106,15 +105,6 @@ export function useMintModel() {
         isMinting.value = true
 
         try {
-            // await ensureAuth()
-            //
-            // const { count } = await getCardsByWallet()
-            //
-            //
-            // if (count) {
-            //     return
-            // }
-
             connect(token.value)
 
             subscribeOnMinted()
@@ -122,7 +112,11 @@ export function useMintModel() {
             await approveTokens(approveAmount)
 
             await mintPack(packId, packAmount)
+
+            isShowMintButton.value = false
         } catch (err: any) {
+            isShowMintButton.value = true
+
             notifyError(en.mintNotification.error, err?.message)
 
             throw err
@@ -137,6 +131,7 @@ export function useMintModel() {
         startMint,
         ensureAuth,
         approveTokens,
-        mintPack
+        mintPack,
+        isShowMintButton
     }
 }
