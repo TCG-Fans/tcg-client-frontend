@@ -1,11 +1,21 @@
 <template>
   <div>
-    <Button size="small"
-            :loading="isLoading"
-            @click="handleWalletSignIn"
-    >
-      {{ accountTitle }}
-    </Button>
+    <div class="flex gap-2">
+      <Button size="small"
+              :loading="isLoading"
+              @click="handleWalletSignIn"
+      >
+        {{ accountTitle }}
+      </Button>
+
+      <Button size="small"
+              :loading="isLoading"
+              @click="startMint(1, 1, '8')"
+      >
+        Mint
+      </Button>
+    </div>
+
 
     <Dialog v-model:visible="isShowMetaMaskConnectionDialog"
             modal :header="en.wallet.connectToWalletModalTitle"
@@ -23,11 +33,14 @@ import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
 import en from '@/shared/lib/languages/en.ts'
 import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
 import {useAppModel} from "@/shared/app/model/useAppModel.ts";
+import {useMintModel} from "@/features/mint/useMintModel.ts";
 
 const { isLoading } = useAppModel()
 const { accountTitle, isShowMetaMaskConnectionDialog, copyAddress } = useWallet();
 
 const { signIn } = useAuthApi();
+
+const { startMint } = useMintModel()
 
 const handleWalletSignIn = () => {
   if (accountTitle.value) {

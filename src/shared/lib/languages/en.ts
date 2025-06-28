@@ -15,5 +15,9 @@ export default {
         title: 'Your deck',
         dragYourCard: 'Drag your card here',
         deckIsLoading: 'Deck is loading'
+    },
+    mintNotification: {
+        success: 'Your deck has been successfully minted',
+        error: 'Your deck has not been successfully minted',
     }
 }
