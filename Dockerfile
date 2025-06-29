@@ -13,6 +13,7 @@ RUN npm ci
 COPY . .
 
 # Build the application
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 RUN npm run build
 
 # Production stage
