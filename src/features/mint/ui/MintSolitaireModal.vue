@@ -6,7 +6,6 @@
       <ProgressSpinner  />
     </div>
     <SolitaireCards v-else :cards="mintedCards" />
-    {{ mintedCards }}
   </Dialog>
 </template>
 
