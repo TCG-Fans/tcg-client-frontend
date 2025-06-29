@@ -68,14 +68,14 @@ export function useMintModel() {
         })
     }
 
-    async function mintPack(packId: number, address: string, amount: number) {
+    async function mintPack(packId: number, address: string, native: boolean) {
         const client = getViemClient()
 
         await client.writeContract({
             address: CARDPOOL_ADDRESS,
             abi: cardpoolAbi,
             functionName: 'mintPack',
-            args: [packId, address, amount],
+            args: [packId, address, native],
             account: walletAddress.value
         })
     }
@@ -97,7 +97,9 @@ export function useMintModel() {
                 return
             }
 
-            await mintPack(packId, walletAddress.value, packAmount)
+            for (let i = 0; i < packAmount; i++) {
+                await mintPack(packId, walletAddress.value, false)
+            }
 
             // isShowMintButton.value = false
         } catch (err: any) {
