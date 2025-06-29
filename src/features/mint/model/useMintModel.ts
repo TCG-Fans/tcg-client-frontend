@@ -20,6 +20,8 @@ const isShowMintModal = ref(false)
 
 const mintedCards = ref<any[]>([])
 
+const isCardProcessing = ref(false)
+
 export function useMintModel() {
     const { notify, notifyError } = useNotify()
 
@@ -46,11 +48,17 @@ export function useMintModel() {
     }
 
     // Create card event listening
-    function subscribeOnMinted() {
+    function subscribeOnMinted(packAmount: number) {
         on(MINT_EVENT, (data) => {
-            mintedCards.value = data.cards
+            const [event, card] = data
 
-            notify(en.mintNotification.success, 'success')
+           mintedCards.value.push(card)
+
+           if (packAmount === mintedCards.value.length) {
+               isCardProcessing.value = true
+
+               notify(en.mintNotification.success, 'success')
+           }
         })
     }
 
@@ -91,7 +99,7 @@ export function useMintModel() {
                 connect(token.value)
             }
 
-            subscribeOnMinted()
+            subscribeOnMinted(packAmount)
 
             await approveTokens(approveAmount)
 
@@ -101,7 +109,7 @@ export function useMintModel() {
 
             await mintPack(packId, walletAddress.value, false)
 
-            isShowMintButton.value = false
+            isCardProcessing.value = true
 
             isShowMintModal.value = true
         } catch (err: any) {
@@ -116,6 +124,7 @@ export function useMintModel() {
     }
 
     return {
+        isCardProcessing,
         isShowMintModal,
         mintedCards,
         isMinting,
