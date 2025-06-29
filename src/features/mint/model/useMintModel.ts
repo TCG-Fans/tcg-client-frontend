@@ -20,7 +20,7 @@ const isShowMintModal = ref(false)
 
 const mintedCards = ref<any[]>([])
 
-const isCardProcessing = ref(false)
+const isCardProcessing = ref(true)
 
 export function useMintModel() {
     const { notify, notifyError } = useNotify()
@@ -53,8 +53,6 @@ export function useMintModel() {
            mintedCards.value.push(data)
 
            if (packAmount === mintedCards.value.length) {
-               isCardProcessing.value = true
-
                notify(en.mintNotification.success, 'success')
            }
         })
