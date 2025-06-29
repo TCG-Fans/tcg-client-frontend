@@ -23,16 +23,14 @@ const cardDetails = ref([])
 
 const { getCardById } = useCardsApi()
 
-watch(mintedCards, async (newMinted) => {
+watch(() => mintedCards.value, async (newMinted) => {
   if (!newMinted || !newMinted.length < 8) {
     return
   }
 
   cardDetails.value = []
 
-  // Собираем все cardId из сминченных карт
   const fetches = newMinted.map(async (item) => {
-    // getCardById может быть асинхронным — дожидаемся
     const card = await getCardById(item.cardId)
 
     return {
