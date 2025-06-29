@@ -99,9 +99,7 @@ export function useMintModel() {
                 return
             }
 
-            for (let i = 0; i < packAmount; i++) {
-                await mintPack(packId, walletAddress.value, false)
-            }
+            await mintPack(packId, walletAddress.value, false)
 
             isShowMintButton.value = false
 
