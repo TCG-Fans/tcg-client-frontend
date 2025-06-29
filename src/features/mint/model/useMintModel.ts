@@ -50,9 +50,7 @@ export function useMintModel() {
     // Create card event listening
     function subscribeOnMinted(packAmount: number) {
         on(MINT_EVENT, (data) => {
-            const [event, card] = data
-
-           mintedCards.value.push(card)
+           mintedCards.value.push(data)
 
            if (packAmount === mintedCards.value.length) {
                isCardProcessing.value = true
