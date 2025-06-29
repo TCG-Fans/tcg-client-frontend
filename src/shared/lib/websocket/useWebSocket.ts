@@ -57,9 +57,9 @@ export function useWebSocket() {
     })
 
     return {
+        isConnected,
         connect,
         send,
         on,
-        isConnected
     }
 }
