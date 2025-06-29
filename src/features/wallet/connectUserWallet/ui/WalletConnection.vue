@@ -33,7 +33,7 @@ import {useWallet} from "@/shared/lib/ethers/useWallet.ts";
 import en from '@/shared/lib/languages/en.ts'
 import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
 import {useAppModel} from "@/shared/app/model/useAppModel.ts";
-import {useMintModel} from "@/features/mint/useMintModel.ts";
+import {useMintModel} from "@/features/mint/model/useMintModel.ts";
 
 const { isLoading } = useAppModel()
 const { accountTitle, isShowMetaMaskConnectionDialog, copyAddress } = useWallet();

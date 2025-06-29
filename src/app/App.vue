@@ -10,6 +10,7 @@
     </div>
     <Toast position="top-right" />
     <MatchMakingModal v-if="isOpenMatchmakingModal" />
+    <MintSolitaireModal />
   </main>
 </template>
 
@@ -22,6 +23,7 @@ import {useAppModel} from "@/shared/app/model/useAppModel.ts";
 import ProgressSpinner from "primevue/progressspinner";
 import {useLaunchApp} from "@/app/model/useLaunchApp.ts";
 import {onBeforeMount} from "vue";
+import MintSolitaireModal from "@/features/mint/ui/MintSolitaireModal.vue";
 
 const { isOpenMatchmakingModal } = useMatchmaking()
 

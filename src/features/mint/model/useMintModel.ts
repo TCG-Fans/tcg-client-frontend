@@ -16,6 +16,10 @@ const CARDPOOL_ADDRESS = '0xdcBf6f32F80172A9Ae9bD0E12D04904f6daCE46E'
 
 const isShowMintButton = ref(false)
 
+const isShowMintModal = ref(false)
+
+const mintedCards = ref<any[]>([])
+
 export function useMintModel() {
     const { notify, notifyError } = useNotify()
 
@@ -24,8 +28,6 @@ export function useMintModel() {
     const { connect, on, isConnected } = useWebSocket()
 
     const isMinting = ref(false)
-
-    const mintedCards = ref<any[]>([])
 
     const token = ref<string | null>(localStorage.getItem('token'))
 
@@ -101,7 +103,9 @@ export function useMintModel() {
                 await mintPack(packId, walletAddress.value, false)
             }
 
-            // isShowMintButton.value = false
+            isShowMintButton.value = false
+
+            isShowMintModal.value = true
         } catch (err: any) {
             // isShowMintButton.value = true
 
@@ -114,6 +118,7 @@ export function useMintModel() {
     }
 
     return {
+        isShowMintModal,
         mintedCards,
         isMinting,
         startMint,

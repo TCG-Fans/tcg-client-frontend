@@ -1,6 +1,6 @@
 import {useAuthApi} from "@/features/auth/api/useAuthApi.ts";
 import {useCardsApi} from "@/entities/cards/api/useCardsApi.ts";
-import {useMintModel} from "@/features/mint/useMintModel.ts";
+import {useMintModel} from "@/features/mint/model/useMintModel.ts";
 
 export const useLaunchApp = () => {
     const { restoreSession } = useAuthApi()
