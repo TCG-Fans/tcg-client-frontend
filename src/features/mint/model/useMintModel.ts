@@ -49,11 +49,16 @@ export function useMintModel() {
 
     // Create card event listening
     function subscribeOnMinted(packAmount: number) {
+        console.log(`Subscription started`);
         on(MINT_EVENT, (data) => {
+            console.log(`Received mint data: ${JSON.stringify(data)}`);
            mintedCards.value.push(data)
 
            if (packAmount === mintedCards.value.length) {
+               console.log(`Enough cards`);
                notify(en.mintNotification.success, 'success')
+           } else {
+               console.log(`Not enough cards`);
            }
         })
     }
